@@ -1,1 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age + Mood Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
+  <h1 class="text-4xl font-bold mb-6">Age + Mood Calculator</h1>
+
+  <input type="file" id="imageUpload" accept="image/*" class="mb-4 p-2 bg-gray-800 rounded" />
+  <button id="predictBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">Predict</button>
+
+  <div id="output" class="mt-6 text-lg"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
 
