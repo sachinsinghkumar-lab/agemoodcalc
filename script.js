@@ -53,12 +53,12 @@ async function predict() {
     const ageIndex = ageArray.indexOf(Math.max(...ageArray));
     const moodIndex = moodArray.indexOf(Math.max(...moodArray));
 
-    // Friendly labels
+    // Friendly labels (customize these to match your Teachable Machine classes)
     const ageLabels = ['Baby', 'Child', 'Teen', 'Adult', 'Senior'];
     const moodLabels = ['Sad', 'Neutral', 'Happy', 'Excited', 'Calm'];
 
-    const ageLabel = ageLabels[ageIndex] || 'Unknown';
-    const moodLabel = moodLabels[moodIndex] || 'Unknown';
+    const ageLabel = ageLabels[ageIndex] || `Class ${ageIndex}`;
+    const moodLabel = moodLabels[moodIndex] || `Class ${moodIndex}`;
 
     output.innerHTML = `
       <p>Estimated Age Group: <span class="text-blue-400 font-semibold">${ageLabel}</span></p>
@@ -69,6 +69,10 @@ async function predict() {
     output.textContent = 'Prediction failed. Check console for details.';
   }
 }
+
+document.getElementById('predictBtn').addEventListener('click', predict);
+loadModels();
+
 
 document.getElementById('predictBtn').addEventListener('click', predict);
 loadModels();
