@@ -16,6 +16,7 @@ async function loadModels() {
 async function predict() {
   const fileInput = document.getElementById('imageUpload');
   const output = document.getElementById('output');
+  const preview = document.getElementById('preview');
 
   if (!fileInput.files.length) {
     output.textContent = 'Please upload an image first.';
@@ -28,8 +29,13 @@ async function predict() {
     return;
   }
 
+  // Show preview
   const img = document.createElement('img');
   img.src = URL.createObjectURL(fileInput.files[0]);
+  img.className = 'rounded-lg shadow-lg mt-4 w-48 h-48 object-cover';
+  preview.innerHTML = '';
+  preview.appendChild(img);
+
   await new Promise(resolve => (img.onload = resolve));
 
   const tensor = tf.browser.fromPixels(img)
@@ -44,15 +50,19 @@ async function predict() {
     const ageArray = agePrediction.dataSync();
     const moodArray = moodPrediction.dataSync();
 
-    console.log('Age raw output:', ageArray);
-    console.log('Mood raw output:', moodArray);
-
     const ageIndex = ageArray.indexOf(Math.max(...ageArray));
     const moodIndex = moodArray.indexOf(Math.max(...moodArray));
 
+    // Friendly labels
+    const ageLabels = ['Baby', 'Child', 'Teen', 'Adult', 'Senior'];
+    const moodLabels = ['Sad', 'Neutral', 'Happy', 'Excited', 'Calm'];
+
+    const ageLabel = ageLabels[ageIndex] || 'Unknown';
+    const moodLabel = moodLabels[moodIndex] || 'Unknown';
+
     output.innerHTML = `
-      <p>Estimated Age Group: <span class="text-blue-400">${ageIndex}</span></p>
-      <p>Estimated Mood: <span class="text-green-400">${moodIndex}</span></p>
+      <p>Estimated Age Group: <span class="text-blue-400 font-semibold">${ageLabel}</span></p>
+      <p>Estimated Mood: <span class="text-green-400 font-semibold">${moodLabel}</span></p>
     `;
   } catch (err) {
     console.error('Prediction error:', err);
@@ -62,4 +72,3 @@ async function predict() {
 
 document.getElementById('predictBtn').addEventListener('click', predict);
 loadModels();
-
