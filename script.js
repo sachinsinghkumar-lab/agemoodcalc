@@ -1,9 +1,16 @@
+console.log('Script connected successfully');
+
 let ageModel, moodModel;
 
 async function loadModels() {
-  ageModel = await tf.loadLayersModel('./image-age/model.json');
-  moodModel = await tf.loadLayersModel('./image-mood/model.json');
-  console.log('Models loaded successfully');
+  try {
+    ageModel = await tf.loadLayersModel('./image-age/model.json');
+    console.log('Age model loaded successfully');
+    moodModel = await tf.loadLayersModel('./image-mood/model.json');
+    console.log('Mood model loaded successfully');
+  } catch (err) {
+    console.error('Model load error:', err);
+  }
 }
 
 async function predict() {
@@ -12,6 +19,12 @@ async function predict() {
 
   if (!fileInput.files.length) {
     output.textContent = 'Please upload an image first.';
+    return;
+  }
+
+  if (!ageModel || !moodModel) {
+    output.textContent = 'Models not loaded yet. Please wait a few seconds.';
+    console.error('Models undefined:', { ageModel, moodModel });
     return;
   }
 
@@ -24,16 +37,27 @@ async function predict() {
     .toFloat()
     .expandDims();
 
-  const agePrediction = ageModel.predict(tensor);
-  const moodPrediction = moodModel.predict(tensor);
+  try {
+    const agePrediction = ageModel.predict(tensor);
+    const moodPrediction = moodModel.predict(tensor);
 
-  const ageValue = agePrediction.dataSync()[0].toFixed(0);
-  const moodValue = moodPrediction.dataSync()[0].toFixed(2);
+    const ageArray = agePrediction.dataSync();
+    const moodArray = moodPrediction.dataSync();
 
-  output.innerHTML = `
-    <p>Estimated Age: <span class="text-blue-400">${ageValue}</span></p>
-    <p>Mood Score: <span class="text-green-400">${moodValue}</span></p>
-  `;
+    console.log('Age raw output:', ageArray);
+    console.log('Mood raw output:', moodArray);
+
+    const ageIndex = ageArray.indexOf(Math.max(...ageArray));
+    const moodIndex = moodArray.indexOf(Math.max(...moodArray));
+
+    output.innerHTML = `
+      <p>Estimated Age Group: <span class="text-blue-400">${ageIndex}</span></p>
+      <p>Estimated Mood: <span class="text-green-400">${moodIndex}</span></p>
+    `;
+  } catch (err) {
+    console.error('Prediction error:', err);
+    output.textContent = 'Prediction failed. Check console for details.';
+  }
 }
 
 document.getElementById('predictBtn').addEventListener('click', predict);
