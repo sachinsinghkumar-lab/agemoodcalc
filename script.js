@@ -1,8 +1,8 @@
 let ageModel, moodModel;
 
 async function loadModels() {
-  ageModel = await tf.loadLayersModel('./age-model/model.json');
-  moodModel = await tf.loadLayersModel('./mood-model/model.json');
+  ageModel = await tf.loadLayersModel('./image-age/model.json');
+  moodModel = await tf.loadLayersModel('./image-mood/model.json');
   console.log('Models loaded successfully');
 }
 
